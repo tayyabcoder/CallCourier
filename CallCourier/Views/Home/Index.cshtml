@@ -1,0 +1,302 @@
+﻿@{
+    ViewData["Title"] = "Shipment Taking Over";
+}
+
+<section class="max-w-7xl mx-auto">
+    <!-- Card -->
+    <div class="bg-white rounded-xl shadow p-6 md:p-8 space-y-6">
+        <!-- Title -->
+        <h2 class="text-xl md:text-2xl font-semibold">Shipment Taking Over</h2>
+        <div class="mt-3 border-t border-gray-200"></div>
+
+        <!-- ===== Form ===== -->
+        <form class="space-y-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+                <!-- Branch -->
+                <div>
+                    <label for="branch" class="block text-sm font-medium text-slate-700 mb-1">Branch</label>
+                    <select id="branch"
+                            class="w-full rounded-lg border border-gray-300 px-3 py-2 text-slate-800 bg-white
+                                   focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                        <option value="">Select branch</option>
+                        <option value="lahore">Lahore</option>
+                        <option value="karachi">Karachi</option>
+                        <option value="islamabad">Islamabad</option>
+                    </select>
+                </div>
+
+                <!-- Date -->
+                <div>
+                    <label for="date" class="block text-sm font-medium text-slate-700 mb-1">Date</label>
+                    <input id="date" type="date"
+                           class="w-full rounded-lg border border-gray-300 px-3 py-2 text-slate-800
+                                  focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" />
+                </div>
+
+                <!-- Sheet No. -->
+                <div>
+                    <label for="sheetNo" class="block text-sm font-medium text-slate-700 mb-1">Sheet No.</label>
+                    <input id="sheetNo" type="text" placeholder="Enter sheet number"
+                           class="w-full rounded-lg border border-gray-300 px-3 py-2 text-slate-800 placeholder-gray-400
+                                  focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" />
+                </div>
+
+                <!-- Handed Over by -->
+                <div>
+                    <label for="handedOverBy" class="block text-sm font-medium text-slate-700 mb-1">Handed Over by</label>
+                    <input id="handedOverBy" type="text" placeholder="Enter name / ID"
+                           class="w-full rounded-lg border border-gray-300 px-3 py-2 text-slate-800 placeholder-gray-400
+                                  focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" />
+                </div>
+
+                <!-- Seal No. (same control; JS enable/clear after sheet load) -->
+                <div>
+                    <label for="sealNo" class="block text-sm font-medium text-slate-700 mb-1">Seal No.</label>
+                    <input id="sealNo" type="text" value="54541451" disabled
+                           class="w-full rounded-lg border border-gray-300 px-3 py-2 bg-gray-100 text-gray-500 cursor-not-allowed" />
+                </div>
+            </div>
+
+            <!-- ===== CN Details (Original UI style) ===== -->
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Left table -->
+                <div class="bg-white rounded-lg border shadow">
+                    <!-- Title row -->
+                    <div class="flex items-center justify-between px-4 pt-4">
+                        <h3 class="text-lg font-semibold text-slate-700">CN Detail</h3>
+                        <span id="totalReceivable" class="text-sm font-semibold text-emerald-600">Total Receivable Bags: 0</span>
+                    </div>
+
+                    <div class="mt-2 overflow-hidden rounded-lg">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-gray-100 text-slate-700">
+                                <tr class="border-y border-gray-200">
+                                    <!-- Seal Number -->
+                                    <th class="py-2.5 pl-4 pr-2">
+                                        <div class="group flex items-center justify-between cursor-pointer">
+                                            <span>Seal Number</span>
+                                            <span class="inline-flex h-6 w-6 items-center justify-center rounded border border-gray-300
+                                                         text-gray-400 transition group-hover:text-slate-700 group-hover:border-slate-400 group-hover:bg-gray-100">
+                                                <i class="fa-solid fa-filter text-[10px]" aria-hidden="true"></i>
+                                            </span>
+                                        </div>
+                                    </th>
+                                    <!-- Total CN(s) -->
+                                    <th class="py-2.5 px-2 border-l border-gray-200">
+                                        <div class="group flex items-center justify-between cursor-pointer">
+                                            <span>Total CN(s)</span>
+                                            <span class="inline-flex h-6 w-6 items-center justify-center rounded border border-gray-300
+                                                         text-gray-400 transition group-hover:text-slate-700 group-hover:border-slate-400 group-hover:bg-gray-100">
+                                                <i class="fa-solid fa-filter text-[10px]" aria-hidden="true"></i>
+                                            </span>
+                                        </div>
+                                    </th>
+                                    <!-- Date -->
+                                    <th class="py-2.5 px-2 border-l border-gray-200">
+                                        <div class="group flex items-center justify-between cursor-pointer">
+                                            <span>Date</span>
+                                            <span class="inline-flex h-6 w-6 items-center justify-center rounded border border-gray-300
+                                                         text-gray-400 transition group-hover:text-slate-700 group-hover:border-slate-400 group-hover:bg-gray-100">
+                                                <i class="fa-solid fa-filter text-[10px]" aria-hidden="true"></i>
+                                            </span>
+                                        </div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="leftTbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Right table -->
+                <div class="bg-white rounded-lg border shadow">
+                    <div class="flex items-center justify-between px-4 pt-4">
+                        <h3 class="text-lg font-semibold text-slate-700">CN Detail</h3>
+                        <div class="flex items-center gap-4 text-sm font-semibold">
+                            <span id="shortReceived" class="text-red-600">Short Received Bags: 0</span>
+                            <span id="totalReceived" class="text-blue-600">Total Received Bags: 0</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-2 overflow-hidden rounded-lg">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-gray-100 text-slate-700">
+                                <tr class="border-y border-gray-200">
+                                    <!-- Seal Number -->
+                                    <th class="py-2.5 pl-4 pr-2">
+                                        <div class="group flex items-center justify-between cursor-pointer">
+                                            <span>Seal Number</span>
+                                            <span class="inline-flex h-6 w-6 items-center justify-center rounded border border-gray-300
+                                                         text-gray-400 transition group-hover:text-slate-700 group-hover:border-slate-400 group-hover:bg-gray-100">
+                                                <i class="fa-solid fa-filter text-[10px]" aria-hidden="true"></i>
+                                            </span>
+                                        </div>
+                                    </th>
+                                    <!-- Total CN(s) -->
+                                    <th class="py-2.5 px-2 border-l border-gray-200">
+                                        <div class="group flex items-center justify-between cursor-pointer">
+                                            <span>Total CN(s)</span>
+                                            <span class="inline-flex h-6 w-6 items-center justify-center rounded border border-gray-300
+                                                         text-gray-400 transition group-hover:text-slate-700 group-hover:border-slate-400 group-hover:bg-gray-100">
+                                                <i class="fa-solid fa-filter text-[10px]" aria-hidden="true"></i>
+                                            </span>
+                                        </div>
+                                    </th>
+                                    <!-- Date -->
+                                    <th class="py-2.5 px-2 border-l border-gray-200">
+                                        <div class="group flex items-center justify-between cursor-pointer">
+                                            <span>Date</span>
+                                            <span class="inline-flex h-6 w-6 items-center justify-center rounded border border-gray-300
+                                                         text-gray-400 transition group-hover:text-slate-700 group-hover:border-slate-400 group-hover:bg-gray-100">
+                                                <i class="fa-solid fa-filter text-[10px]" aria-hidden="true"></i>
+                                            </span>
+                                        </div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="rightTbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions (left aligned like original) -->
+            <div class="flex justify-start gap-3">
+                <button type="submit"
+                        class="inline-flex items-center px-5 py-2.5 rounded-lg shadow bg-emerald-600 hover:bg-emerald-700 text-white transition">
+                    Save
+                </button>
+                <button type="button"
+                        class="inline-flex items-center px-5 py-2.5 rounded-lg shadow bg-white border border-gray-300 text-slate-700 hover:bg-gray-50 transition">
+                    Close
+                </button>
+            </div>
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        // ---------- MOCK DATA (sheetNo -> rows) ----------
+        const mockShipments = {
+          "123": [
+            { seal: "45544", cn: "Delivery Phase 2", date: "19/07/2024" },
+            { seal: "78",    cn: "Delivery Phase 2", date: "19/07/2024" },
+            { seal: "23",    cn: "Delivery Phase 2", date: "19/07/2024" },
+            { seal: "67",    cn: "Delivery Phase 2", date: "19/07/2024" },
+            { seal: "89",    cn: "Delivery Phase 2", date: "19/07/2024" },
+            { seal: "12",    cn: "Delivery Phase 2", date: "19/07/2024" },
+          ],
+          "54541451": [
+            { seal: "1001", cn: "Pickup Run A", date: "21/07/2024" },
+            { seal: "1002", cn: "Pickup Run A", date: "21/07/2024" },
+            { seal: "1003", cn: "Pickup Run A", date: "21/07/2024" },
+          ]
+        };
+
+        // ---------- STATE ----------
+        let currentSheet = null;
+        let toReceive = []; // left (pending)
+        let received  = []; // right
+
+        // ---------- DOM refs ----------
+        const sheetNoInput = document.getElementById('sheetNo');
+        const sealNoInput  = document.getElementById('sealNo'); // existing id kept
+
+        const leftTbody  = document.getElementById('leftTbody');
+        const rightTbody = document.getElementById('rightTbody');
+
+        const totalReceivableEl = document.getElementById('totalReceivable');
+        const totalReceivedEl   = document.getElementById('totalReceived');
+        const shortReceivedEl   = document.getElementById('shortReceived');
+
+        // ---------- Helpers ----------
+        function zebraRow(idx){ return idx % 2 ? 'bg-gray-50' : ''; }
+
+        function renderTable(tbody, rows){
+          tbody.innerHTML = rows.map((r, i) => `
+            <tr class="border-b border-gray-200 ${zebraRow(i)}">
+              <td class="py-2.5 pl-4 pr-2">${r.seal}</td>
+              <td class="px-2">${r.cn}</td>
+              <td class="px-2">${r.date}</td>
+            </tr>
+          `).join('');
+        }
+
+        // ***** DYNAMIC COUNTERS (Remaining-based) *****
+        function updateCounters(){
+          const remaining = toReceive.length;      // pending bags (left)
+          const receivedCount = received.length;   // received bags (right)
+
+          totalReceivableEl.textContent = `Total Receivable Bags: ${remaining}`;
+          totalReceivedEl.textContent   = `Total Received Bags: ${receivedCount}`;
+          shortReceivedEl.textContent   = `Short Received Bags: ${remaining}`; // same as pending
+        }
+
+        function resetTables(){
+          toReceive = [];
+          received  = [];
+          renderTable(leftTbody, toReceive);
+          renderTable(rightTbody, received);
+          updateCounters();
+          // keep existing control but disable + greyed
+          sealNoInput.value = '';
+          sealNoInput.disabled = true;
+          sealNoInput.classList.add('bg-gray-100','text-gray-500','cursor-not-allowed');
+        }
+
+        // ---------- Actions ----------
+        function loadSheet(sheetNo){
+          const rows = mockShipments[sheetNo];
+          if(!rows){ resetTables(); return; }
+          currentSheet = sheetNo;
+          toReceive = JSON.parse(JSON.stringify(rows)); // clone
+          received  = [];
+          renderTable(leftTbody, toReceive);
+          renderTable(rightTbody, received);
+          updateCounters();
+          // enable Seal No. field for receiving
+          sealNoInput.disabled = false;
+          sealNoInput.classList.remove('bg-gray-100','cursor-not-allowed');
+          sealNoInput.placeholder = "Type seal and press Enter";
+          sealNoInput.focus();
+        }
+
+        function receiveSeal(seal){
+          if(!seal) return;
+          // already received?
+          if(received.some(r => r.seal === seal)) return;
+
+          const idx = toReceive.findIndex(r => r.seal === seal);
+          if(idx === -1) return; // not found in pending
+
+          const row = toReceive.splice(idx,1)[0];
+          received.unshift(row);                // add to top on right
+          renderTable(leftTbody, toReceive);
+          renderTable(rightTbody, received);
+          updateCounters();
+        }
+
+        // ---------- Events ----------
+        // Sheet No. -> Enter
+        sheetNoInput.addEventListener('keydown', (e) => {
+          if(e.key === 'Enter'){ e.preventDefault(); loadSheet(sheetNoInput.value.trim()); }
+        });
+        // Sheet No. -> blur (optional)
+        sheetNoInput.addEventListener('blur', () => {
+          const val = sheetNoInput.value.trim();
+          if(val && val !== currentSheet){ loadSheet(val); }
+        });
+        // Seal No. -> Enter to receive
+        sealNoInput.addEventListener('keydown', (e) => {
+          if(e.key === 'Enter'){
+            e.preventDefault();
+            receiveSeal(sealNoInput.value.trim());
+            sealNoInput.value = '';
+          }
+        });
+
+        // init with both tables empty
+        resetTables();
+    </script>
+}
