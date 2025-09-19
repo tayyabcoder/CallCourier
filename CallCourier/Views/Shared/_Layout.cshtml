@@ -5,180 +5,260 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - CallCourier</title>
     <link rel="stylesheet" href="~/css/output.css" asp-append-version="true" />
-    <!-- Font Awesome for Navbar Icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
 </head>
 <body class="min-h-screen flex flex-col bg-gray-100 text-gray-900">
 
     <!-- Header -->
-    <header class="w-full bg-green-600">
-        <div class="max-w-7xl mx-auto flex items-center justify-between px-4 py-3">
-            <!-- Left: logo + title -->
-            <div class="flex items-center gap-2">
-                <img src="~/images/logo.png" alt="Logo" class="h-8 w-auto" />
-                <div class="text-white whitespace-nowrap">
-                    <span class="font-semibold">| GoGreen</span>
-                    <span> (Courier Management System)</span>
+    <header class="sticky top-0 z-50 w-full bg-green-600">
+        <!-- mobile: items-center | desktop: items-start (unchanged) -->
+        <div class="max-w-7xl mx-auto flex items-center lg:items-start justify-between px-3 sm:px-4 py-2 sm:py-3">
+
+            <!-- LEFT: Logo + title -->
+            <div class="flex items-center gap-2 min-w-0">
+                <img src="~/images/logo.png" alt="Logo" class="h-6 sm:h-8 w-auto shrink-0" />
+                <div class="min-w-0 leading-tight">
+                    <div class="text-white font-semibold text-sm sm:text-base truncate">| GoGreen</div>
+                    <div class="hidden md:block text-white/90 text-xs">Courier Management System</div>
                 </div>
             </div>
 
-            <!-- Right: search + profile -->
-            <div class="flex items-center gap-3">
-                <input type="text"
-                       placeholder="Select Document …"
-                       class="h-11 w-72 md:w-96 bg-white text-gray-800 placeholder-gray-500
-                              border border-gray-300 rounded-md px-4 shadow-sm
-                              focus:outline-none focus:ring-2 focus:ring-green-500 focus:shadow-md
-                              hover:shadow-md transition" />
-                <div class="flex items-center bg-green-500/20 rounded-full pl-1 pr-3 py-1">
-                    <!-- Avatar: responsive + hover + initials from 'Tayyab' -->
-                    <span class="flex h-8 w-8 md:h-9 md:w-9 items-center justify-center rounded-full
-                      bg-black/40 text-white text-xs md:text-sm font-semibold
-                      transition-transform duration-200 hover:scale-110
-                      hover:ring-2 hover:ring-white/50
-                      cursor-pointer select-none" aria-label="Open profile">
-                        TA
-                    </span>
+            <!-- RIGHT: Search (≥sm) + Profile -->
+            <div class="flex items-center gap-2 sm:gap-3">
+                <!-- Search (desktop/tablet) -->
+                <div class="hidden sm:block">
+                    <div class="relative w-40 sm:w-56 md:w-72 lg:w-[32rem]">
+                        <input type="text" placeholder="Select Document …"
+                               class="h-9 sm:h-10 w-full bg-white text-gray-800 placeholder-gray-500
+                                      border border-white/70 rounded-full pl-9 pr-4 shadow-sm
+                                      focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-white
+                                      transition" />
+                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </span>
+                    </div>
+                </div>
 
-                    <span class="ml-2 text-white text-sm font-medium">Tayyab</span>
+                <!-- Profile + Hamburger -->
+                <!-- mobile: row + tight padding | desktop: looks the same -->
+                <div class="flex items-center gap-2 lg:gap-3">
+                    <!-- Profile (compact) -->
+                    <button type="button"
+                            class="inline-flex items-center gap-2 rounded-full bg-white/10 px-2.5 py-1
+                                   lg:pl-1.5 lg:pr-3 lg:py-1.5
+                                   ring-1 ring-white/20 shadow-sm backdrop-blur
+                                   hover:bg-white/15 hover:ring-white/30 transition
+                                   focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70">
+                        <span class="grid h-7 w-7 sm:h-8 sm:w-8 place-items-center rounded-full text-white text-xs sm:text-sm font-semibold
+                                     shadow-sm ring-1 ring-white/30 bg-gradient-to-br from-emerald-500 to-green-700">TA</span>
+                        <span class="hidden sm:block text-white text-sm font-medium pr-0.5">Tayyab</span>
+                    </button>
+
+                    <!-- Hamburger (mobile only) -->
+                    <button type="button"
+                            id="btnMobileMenu"
+                            class="lg:hidden inline-flex h-9 w-9 items-center justify-center rounded-md text-white/90 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/60"
+                            aria-controls="mobileMenuPanel"
+                            aria-expanded="false"
+                            aria-label="Open menu">
+                        <i class="fa-solid fa-bars text-lg"></i>
+                    </button>
                 </div>
             </div>
         </div>
     </header>
     <!-- /Header -->
-    <!-- ===== Nav Card + Green Strip (exact like original) ===== -->
+    <!-- ===== Mobile Menu (Off-Canvas) ===== -->
+    <div id="mobileMenuSheet" class="lg:hidden fixed inset-0 z-50 hidden">
+        <!-- overlay -->
+        <div id="mobileMenuOverlay" class="absolute inset-0 bg-black/30 backdrop-blur-[1px] opacity-0 transition-opacity"></div>
+
+        <!-- panel -->
+        <nav id="mobileMenuPanel"
+             class="absolute right-0 top-0 h-full w-72 max-w-[85%] translate-x-full bg-white shadow-xl transition-transform">
+            <div class="flex items-center justify-between px-4 h-14 bg-emerald-600 text-white">
+                <span class="font-semibold text-sm tracking-wide uppercase">Menu</span>
+                <button id="btnMobileClose" class="h-9 w-9 grid place-items-center rounded-md hover:bg-white/10" aria-label="Close menu">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- vertical list -->
+            <ul class="px-3 py-3 space-y-1 text-slate-700">
+                <li>
+                    <a class="group flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 cursor-pointer transition">
+                        <i class="fa-solid fa-plus text-lg transition group-hover:text-emerald-600"></i>
+                        <span class="text-sm transition group-hover:text-emerald-600">&amp;Define</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="group flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 cursor-pointer transition">
+                        <i class="fa-solid fa-file-invoice text-lg transition group-hover:text-emerald-600"></i>
+                        <span class="text-sm transition group-hover:text-emerald-600">&amp;Transaction</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="group flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 cursor-pointer transition">
+                        <i class="fa-solid fa-chart-column text-lg transition group-hover:text-emerald-600"></i>
+                        <span class="text-sm transition group-hover:text-emerald-600">Inventory Reports</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="group flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 cursor-pointer transition">
+                        <i class="fa-solid fa-id-card text-lg transition group-hover:text-emerald-600"></i>
+                        <span class="text-sm transition group-hover:text-emerald-600">HCM</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="group flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 cursor-pointer transition">
+                        <i class="fa-solid fa-boxes-stacked text-lg transition group-hover:text-emerald-600"></i>
+                        <span class="text-sm transition group-hover:text-emerald-600">WMS</span>
+                    </a>
+                </li>
+                <li dir="rtl">
+                    <a class="group flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 cursor-pointer transition">
+                        <i class="fa-solid fa-book text-lg transition group-hover:text-emerald-600"></i>
+                        <span class="text-sm transition group-hover:text-emerald-600">گِلے شِکوے</span>
+                    </a>
+                </li>
+
+                <!-- Active (COD) -->
+                <li>
+                    <a class="flex items-center gap-3 px-3 py-2 rounded-md bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200 cursor-pointer hover:bg-emerald-100 hover:ring-emerald-300 transition">
+                        <i class="fa-solid fa-sack-dollar text-lg"></i>
+                        <span class="text-sm font-semibold">COD Financials</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a class="group flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 cursor-pointer transition">
+                        <i class="fa-solid fa-circle-check text-lg transition group-hover:text-emerald-600"></i>
+                        <span class="text-sm transition group-hover:text-emerald-600">CN Status</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="group flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 cursor-pointer transition">
+                        <i class="fa-solid fa-mug-saucer text-lg transition group-hover:text-emerald-600"></i>
+                        <span class="text-sm transition group-hover:text-emerald-600">Operations</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="group flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 cursor-pointer transition">
+                        <i class="fa-solid fa-user-group text-lg transition group-hover:text-emerald-600"></i>
+                        <span class="text-sm transition group-hover:text-emerald-600">Group Admin</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+    <!-- ===== /Mobile Menu ===== -->
+    <!-- Nav + Green Strip (desktop only area unchanged) -->
     <section class="w-full">
-        <div class="max-w-7xl mx-auto px-4">
-            <!-- mt-3 removed here -->
+        <div class="max-w-7xl mx-auto px-3 sm:px-4 sm:pr-[5.3rem]">
             <div class="bg-white rounded-lg shadow md:rounded-xl md:shadow-md">
-                <!-- Hidden heading for semantics (satisfies analyzer) -->
                 <h2 id="nav-title" class="sr-only">Primary Navigation</h2>
 
-                <!-- Navbar -->
-                <nav class="w-full">
-                    <div class="px-8">
-                        <ul class="grid grid-cols-10 place-items-center text-slate-700">
+                <!-- Desktop grid nav -->
+                <div class="px-6 lg:px-8">
+                    <ul class="hidden lg:grid grid-cols-10 place-items-center gap-2 px-2 text-slate-700">
+                        <li>
+                            <a class="group flex flex-col items-center py-4 px-2 cursor-pointer">
+                                <span class="flex h-8 w-8 items-center justify-center">
+                                    <i class="fa-solid fa-plus text-2xl group-hover:scale-110 group-hover:text-emerald-600 transition"></i>
+                                </span>
+                                <span class="text-[13px] h-8 flex items-center justify-center group-hover:text-emerald-600 transition-colors">&amp;Define</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="group flex flex-col items-center py-4 px-2 cursor-pointer">
+                                <span class="flex h-8 w-8 items-center justify-center">
+                                    <i class="fa-solid fa-file-invoice text-2xl group-hover:scale-110 group-hover:text-emerald-600 transition"></i>
+                                </span>
+                                <span class="text-[13px] h-8 flex items-center justify-center group-hover:text-emerald-600 transition-colors">&amp;Transaction</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="group flex flex-col items-center py-4 px-2 cursor-pointer">
+                                <span class="flex h-8 w-8 items-center justify-center">
+                                    <i class="fa-solid fa-chart-column text-2xl group-hover:scale-110 group-hover:text-emerald-600 transition"></i>
+                                </span>
+                                <span class="text-[13px] h-8 flex items-center justify-center group-hover:text-emerald-600 transition-colors">Inventory Reports</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="group flex flex-col items-center py-4 px-2 cursor-pointer">
+                                <span class="flex h-8 w-8 items-center justify-center">
+                                    <i class="fa-solid fa-id-card text-2xl group-hover:scale-110 group-hover:text-emerald-600 transition"></i>
+                                </span>
+                                <span class="text-[13px] h-8 flex items-center justify-center group-hover:text-emerald-600 transition-colors">HCM</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="group flex flex-col items-center py-4 px-2 cursor-pointer">
+                                <span class="flex h-8 w-8 items-center justify-center">
+                                    <i class="fa-solid fa-boxes-stacked text-2xl group-hover:scale-110 group-hover:text-emerald-600 transition"></i>
+                                </span>
+                                <span class="text-[13px] h-8 flex items-center justify-center group-hover:text-emerald-600 transition-colors">WMS</span>
+                            </a>
+                        </li>
+                        <li dir="rtl">
+                            <a class="group flex flex-col items-center py-4 px-2 cursor-pointer">
+                                <span class="flex h-8 w-8 items-center justify-center">
+                                    <i class="fa-solid fa-book text-2xl group-hover:scale-110 group-hover:text-emerald-600 transition"></i>
+                                </span>
+                                <span class="text-[13px] h-8 flex items-center justify-center group-hover:text-emerald-600 transition-colors">گِلے شِکوے</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="group flex flex-col items-center py-4 px-2 text-emerald-600 font-semibold border-b-2 border-emerald-600 cursor-pointer">
+                                <span class="flex h-8 w-8 items-center justify-center">
+                                    <i class="fa-solid fa-sack-dollar text-2xl"></i>
+                                </span>
+                                <span class="text-[13px] h-8 flex items-center justify-center">COD Financials</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="group flex flex-col items-center py-4 px-2 cursor-pointer">
+                                <span class="flex h-8 w-8 items-center justify-center">
+                                    <i class="fa-solid fa-circle-check text-2xl group-hover:scale-110 group-hover:text-emerald-600 transition"></i>
+                                </span>
+                                <span class="text-[13px] h-8 flex items-center justify-center group-hover:text-emerald-600 transition-colors">CN Status</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="group flex flex-col items-center py-4 px-2 cursor-pointer">
+                                <span class="flex h-8 w-8 items-center justify-center">
+                                    <i class="fa-solid fa-mug-saucer text-2xl group-hover:scale-110 group-hover:text-emerald-600 transition"></i>
+                                </span>
+                                <span class="text-[13px] h-8 flex items-center justify-center group-hover:text-emerald-600 transition-colors">Operations</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="group flex flex-col items-center py-4 px-2 cursor-pointer">
+                                <span class="flex h-8 w-8 items-center justify-center">
+                                    <i class="fa-solid fa-user-group text-2xl group-hover:scale-110 group-hover:text-emerald-600 transition"></i>
+                                </span>
+                                <span class="text-[13px] h-8 flex items-center justify-center group-hover:text-emerald-600 transition-colors">Group Admin</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
 
-                            <!-- &Define -->
-                            <li>
-                                <a class="group flex flex-col items-center py-4 px-2 cursor-pointer">
-                                    <span class="flex h-8 w-8 items-center justify-center leading-none text-center">
-                                        <i class="fa-solid fa-plus text-2xl transform transition-transform duration-200 group-hover:scale-110 group-hover:text-emerald-600"></i>
-                                    </span>
-                                    <span class="text-[13px] h-8 flex items-center justify-center text-center transition-colors duration-200 group-hover:text-emerald-600">&amp;Define</span>
-                                </a>
-                            </li>
-
-                            <!-- &Transaction -->
-                            <li>
-                                <a class="group flex flex-col items-center py-4 px-2 cursor-pointer">
-                                    <span class="flex h-8 w-8 items-center justify-center leading-none text-center">
-                                        <i class="fa-solid fa-file-invoice text-2xl transform transition-transform duration-200 group-hover:scale-110 group-hover:text-emerald-600"></i>
-                                    </span>
-                                    <span class="text-[13px] h-8 flex items-center justify-center text-center transition-colors duration-200 group-hover:text-emerald-600">&amp;Transaction</span>
-                                </a>
-                            </li>
-
-                            <!-- Inventory Reports -->
-                            <li>
-                                <a class="group flex flex-col items-center py-4 px-2 cursor-pointer">
-                                    <span class="flex h-8 w-8 items-center justify-center leading-none text-center">
-                                        <i class="fa-solid fa-chart-column text-2xl transform transition-transform duration-200 group-hover:scale-110 group-hover:text-emerald-600"></i>
-                                    </span>
-                                    <span class="text-[13px] h-8 flex items-center justify-center text-center transition-colors duration-200 group-hover:text-emerald-600">
-                                        Inventory Reports
-                                    </span>
-                                </a>
-                            </li>
-
-                            <!-- HCM -->
-                            <li>
-                                <a class="group flex flex-col items-center py-4 px-2 cursor-pointer">
-                                    <span class="flex h-8 w-8 items-center justify-center leading-none text-center">
-                                        <i class="fa-solid fa-id-card text-2xl transform transition-transform duration-200 group-hover:scale-110 group-hover:text-emerald-600"></i>
-                                    </span>
-                                    <span class="text-[13px] h-8 flex items-center justify-center text-center transition-colors duration-200 group-hover:text-emerald-600">HCM</span>
-                                </a>
-                            </li>
-
-                            <!-- WMS -->
-                            <li>
-                                <a class="group flex flex-col items-center py-4 px-2 cursor-pointer">
-                                    <span class="flex h-8 w-8 items-center justify-center leading-none text-center">
-                                        <i class="fa-solid fa-boxes-stacked text-2xl transform transition-transform duration-200 group-hover:scale-110 group-hover:text-emerald-600"></i>
-                                    </span>
-                                    <span class="text-[13px] h-8 flex items-center justify-center text-center transition-colors duration-200 group-hover:text-emerald-600">WMS</span>
-                                </a>
-                            </li>
-
-                            <!-- گِلے شِکوے -->
-                            <li dir="rtl">
-                                <a class="group flex flex-col items-center py-4 px-2 cursor-pointer">
-                                    <span class="flex h-8 w-8 items-center justify-center leading-none text-center">
-                                        <i class="fa-solid fa-book text-2xl transform transition-transform duration-200 group-hover:scale-110 group-hover:text-emerald-600"></i>
-                                    </span>
-                                    <span class="text-[13px] h-8 flex items-center justify-center text-center transition-colors duration-200 group-hover:text-emerald-600">گِلے شِکوے</span>
-                                </a>
-                            </li>
-
-                            <!-- COD Financials (Active) -->
-                            <li>
-                                <a class="group flex flex-col items-center py-4 px-2 text-emerald-600 font-semibold border-b-2 border-emerald-600 cursor-pointer">
-                                    <span class="flex h-8 w-8 items-center justify-center leading-none text-center">
-                                        <i class="fa-solid fa-sack-dollar text-2xl"></i>
-                                    </span>
-                                    <span class="text-[13px] h-8 flex items-center justify-center text-center">COD Financials</span>
-                                </a>
-                            </li>
-
-                            <!-- CN Status -->
-                            <li>
-                                <a class="group flex flex-col items-center py-4 px-2 cursor-pointer">
-                                    <span class="flex h-8 w-8 items-center justify-center leading-none text-center">
-                                        <i class="fa-solid fa-circle-check text-2xl transform transition-transform duration-200 group-hover:scale-110 group-hover:text-emerald-600"></i>
-                                    </span>
-                                    <span class="text-[13px] h-8 flex items-center justify-center text-center transition-colors duration-200 group-hover:text-emerald-600">CN Status</span>
-                                </a>
-                            </li>
-
-                            <!-- Operations -->
-                            <li>
-                                <a class="group flex flex-col items-center py-4 px-2 cursor-pointer">
-                                    <span class="flex h-8 w-8 items-center justify-center leading-none text-center">
-                                        <i class="fa-solid fa-mug-saucer text-2xl transform transition-transform duration-200 group-hover:scale-110 group-hover:text-emerald-600"></i>
-                                    </span>
-                                    <span class="text-[13px] h-8 flex items-center justify-center text-center transition-colors duration-200 group-hover:text-emerald-600">Operations</span>
-                                </a>
-                            </li>
-
-                            <!-- Group Admin -->
-                            <li>
-                                <a class="group flex flex-col items-center py-4 px-2 cursor-pointer">
-                                    <span class="flex h-8 w-8 items-center justify-center leading-none text-center">
-                                        <i class="fa-solid fa-user-group text-2xl transform transition-transform duration-200 group-hover:scale-110 group-hover:text-emerald-600"></i>
-                                    </span>
-                                    <span class="text-[13px] h-8 flex items-center justify-center text-center transition-colors duration-200 group-hover:text-emerald-600">Group Admin</span>
-                                </a>
-                            </li>
-
-                        </ul>
-                    </div>
-                </nav>
-
-                <!-- Green Strip -->
-                <div class="px-8 pb-3">
-                    <div class="relative mt-2 rounded-md bg-emerald-600 text-white text-[12px] tracking-wide uppercase text-center py-2 shadow-sm">
+                <!-- Green Strip (DESKTOP ONLY) -->
+                <div class="px-6 lg:px-8 pb-3 hidden lg:block">
+                    <div class="relative mt-2 rounded-md bg-emerald-600 text-white text-[11px] sm:text-[12px] tracking-wide uppercase text-center py-2 shadow-sm">
                         SHIPMENT TAKING OVER
                         <span class="absolute right-2 top-1/2 -translate-y-1/2 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-white/20 px-2 text-xs">×</span>
                     </div>
                 </div>
+
             </div>
         </div>
     </section>
-    <!-- /Nav Card + Green Strip -->
+    <!-- /Nav + Green Strip -->
 
     <main class="flex-1">
-        <div class="max-w-7xl mx-auto px-4 py-6">
+        <div class="max-w-7xl mx-auto px-4 sm:pr-[5.3rem] py-6">
             @RenderBody()
         </div>
     </main>
@@ -188,6 +268,40 @@
             &copy; @DateTime.UtcNow.Year - CallCourier
         </div>
     </footer>
+
+    <!-- Mobile menu toggle -->
+    <script>
+        (function () {
+            const sheet   = document.getElementById('mobileMenuSheet');
+            const panel   = document.getElementById('mobileMenuPanel');
+            const overlay = document.getElementById('mobileMenuOverlay');
+            const btnOpen = document.getElementById('btnMobileMenu');
+            const btnClose= document.getElementById('btnMobileClose');
+
+            function openMenu() {
+                sheet.classList.remove('hidden');
+                requestAnimationFrame(() => {
+                    overlay.classList.remove('opacity-0');
+                    panel.classList.remove('translate-x-full');
+                });
+                btnOpen?.setAttribute('aria-expanded', 'true');
+                document.documentElement.style.overflow = 'hidden';
+            }
+
+            function closeMenu() {
+                overlay.classList.add('opacity-0');
+                panel.classList.add('translate-x-full');
+                btnOpen?.setAttribute('aria-expanded', 'false');
+                setTimeout(() => sheet.classList.add('hidden'), 200);
+                document.documentElement.style.overflow = '';
+            }
+
+            btnOpen?.addEventListener('click', openMenu);
+            btnClose?.addEventListener('click', closeMenu);
+            overlay?.addEventListener('click', closeMenu);
+            window.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMenu(); });
+        })();
+    </script>
 
     @RenderSection("Scripts", required: false)
 </body>

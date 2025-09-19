@@ -4,6 +4,10 @@ module.exports = {
         "./Views/**/*.cshtml",
         "./wwwroot/**/*.js"
     ],
-    theme: { extend: {} },
-    plugins: [],
+    theme: {
+        extend: {},
+    },
+    plugins: [
+        require('tailwind-scrollbar')({ nocompatible: true }),
+    ],
 }
